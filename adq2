@@ -1,0 +1,94 @@
+#include <iostream>
+using namespace std;
+
+struct Node {
+    int data;
+    Node* next;
+    Node(int val) : data(val), next(NULL) {}
+};
+
+// Helper function: get the kth node from temp
+Node* getKthNode(Node* temp, int k) {
+    k -= 1;
+    while (temp != NULL && k > 0) {
+        temp = temp->next;
+        k--;
+    }
+    return temp;
+}
+
+// Helper function: reverse a linked list and return new head
+Node* reverseLL(Node* head) {
+    Node* prev = NULL;
+    Node* curr = head;
+    while (curr != NULL) {
+        Node* nextNode = curr->next;
+        curr->next = prev;
+        prev = curr;
+        curr = nextNode;
+    }
+    return prev; // new head
+}
+
+// Main function: reverse in groups of k
+Node* kreverse(Node* head, int k) {
+    Node* temp = head;
+    Node* prevLast = NULL;
+
+    while (temp != NULL) {
+        Node* kthNode = getKthNode(temp, k);
+
+        // If less than k nodes remain, link and stop
+        if (kthNode == NULL) {
+            if (prevLast)
+                prevLast->next = temp;
+            break;
+        }
+
+        Node* nextNode = kthNode->next;
+        kthNode->next = NULL; // Temporarily break the link
+
+        // Reverse the current group
+        Node* newHead = reverseLL(temp);
+
+        // Connect with previous part
+        if (temp == head)
+            head = newHead;
+        else
+            prevLast->next = newHead;
+
+        // Update prevLast and temp for next group
+        prevLast = temp;
+        temp = nextNode;
+    }
+
+    return head;
+}
+
+// Utility function to print list
+void printList(Node* head) {
+    while (head != NULL) {
+        cout << head->data << " ";
+        head = head->next;
+    }
+    cout << endl;
+}
+
+int main() {
+    // Example: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
+    Node* head = new Node(1);
+    head->next = new Node(2);
+    head->next->next = new Node(3);
+    head->next->next->next = new Node(4);
+    head->next->next->next->next = new Node(5);
+    head->next->next->next->next->next = new Node(6);
+    head->next->next->next->next->next->next = new Node(7);
+    head->next->next->next->next->next->next->next = new Node(8);
+
+    int k = 3;
+    head = kreverse(head, k);
+
+    cout << "Linked list after reversing in groups of " << k << ": ";
+    printList(head);
+    return 0;
+}
