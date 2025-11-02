@@ -1,0 +1,88 @@
+#include <iostream>
+using namespace std;
+// Node structure
+struct Node {
+    int data;
+    Node* next;
+    Node(int val){
+        data = val;
+        next = nullptr;
+    }
+};
+// Function to insert a node at the end of the list
+void insertEnd(Node*& head, int val) {
+    Node* newNode = new Node(val);
+    if (head == nullptr) {
+        head = newNode;
+        return;
+    }
+    Node* temp = head;
+    while (temp->next != nullptr)
+        temp = temp->next;
+    temp->next = newNode;
+}
+
+// Function to count and delete all occurrences of key
+int deleteKey(Node*& head, int key) {
+    Node* temp = head;
+    Node* prev = nullptr;
+    int count = 0;
+
+    // Remove occurrences from the beginning
+    while (temp != nullptr && temp->data == key) {
+        Node* toDelete = temp;
+        temp = temp->next;
+        delete toDelete;
+        count++;
+    }
+    head = temp; // update head
+
+    // Traverse remaining list
+    while (temp != nullptr) {
+        if (temp->data == key) {
+            Node* toDelete = temp;
+            prev->next = temp->next;
+            temp = temp->next;
+            delete toDelete;
+            count++;
+        } else {
+            prev = temp;
+            temp = temp->next;
+        }
+    }
+
+    return count;
+}
+
+// Function to print linked list
+void printList(Node* head) {
+    Node* temp = head;
+    while (temp != nullptr) {
+        cout << temp->data;
+        if (temp->next != nullptr) cout << "->";
+        temp = temp->next;
+    }
+    cout << endl;
+}
+
+int main() {
+    Node* head = nullptr;
+    int arr[] = {1, 2, 1, 2, 1, 3, 1};
+    int n = sizeof(arr) / sizeof(arr[0]);
+    int key = 1;
+
+    // Create the linked list
+    for (int i = 0; i < n; i++)
+        insertEnd(head, arr[i]);
+
+    cout << "Original Linked List: ";
+    printList(head);
+
+    int count = deleteKey(head, key);
+    cout << "Count: " << count << endl;
+
+    cout << "Updated Linked List: ";
+    printList(head);
+
+    return 0;
+}
