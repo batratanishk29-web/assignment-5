@@ -1,0 +1,98 @@
+#include <iostream>
+using namespace std;
+
+struct Node {
+    int data;
+    Node* next;
+    Node(int val) {
+        data = val;
+        next = NULL;
+    }
+};
+
+// Find the k-th node (1-based index)
+Node* findNthNode(Node* temp, int k) {
+    int cnt = 1;
+    while (temp != NULL) {
+        if (cnt == k) return temp;
+        cnt++;
+        temp = temp->next;
+    }
+    return NULL;
+}
+
+Node* rotate(Node* head, int k) {
+    if (head == NULL || k == 0) return head;
+
+    // Step 1: Find length & tail
+    Node* tail = head;
+    int len = 1;
+    while (tail->next != NULL) {
+        tail = tail->next;
+        len++;
+    }
+
+    // Step 2: Optimize k
+    k = k % len;
+    if (k == 0) return head;
+
+    // Step 3: Make list circular
+    tail->next = head;
+
+    // Step 4: Find new last node (len-k th node)
+    Node* newLastNode = findNthNode(head, len - k);
+
+    // Step 5: New head will be next of newLastNode
+    head = newLastNode->next;
+
+    // Step 6: Break the cycle
+    newLastNode->next = NULL;
+
+    return head;
+}
+
+// Insert at tail
+void insertEnd(Node*& head, int val) {
+    Node* newNode = new Node(val);
+    if (!head) {
+        head = newNode;
+        return;
+    }
+    Node* temp = head;
+    while (temp->next)
+        temp = temp->next;
+    temp->next = newNode;
+}
+
+// Print list
+void printList(Node* head) {
+    Node* temp = head;
+    while (temp) {
+        cout << temp->data;
+        if (temp->next) cout << " -> ";
+        temp = temp->next;
+    }
+    cout << endl;
+}
+
+int main() {
+    Node* head = NULL;
+
+    // Create list: 1 2 3 4 5
+    insertEnd(head, 1);
+    insertEnd(head, 2);
+    insertEnd(head, 3);
+    insertEnd(head, 4);
+    insertEnd(head, 5);
+
+    cout << "Original List: ";
+    printList(head);
+
+    int k = 2;
+    head = rotate(head, k);
+
+    cout << "Rotated List by " << k << ": ";
+    printList(head);
+
+    return 0;
+}
